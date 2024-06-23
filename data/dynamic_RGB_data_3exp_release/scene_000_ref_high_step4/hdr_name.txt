@@ -1,0 +1,1 @@
+scene_000_ref_high_step4.hdr

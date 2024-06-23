@@ -1,0 +1,6 @@
+scene_000_ref_low_step1/scene_000_ref_low_step1.hdr
+scene_000_ref_low_step4/scene_000_ref_low_step4.hdr
+scene_000_ref_mid_step1/scene_000_ref_mid_step1.hdr
+scene_000_ref_mid_step4/scene_000_ref_mid_step4.hdr
+scene_000_ref_high_step1/scene_000_ref_high_step1.hdr
+scene_000_ref_high_step4/scene_000_ref_high_step4.hdr

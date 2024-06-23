@@ -1,0 +1,1 @@
+scene_000_ref_low_step1.hdr
