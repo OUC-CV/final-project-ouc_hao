@@ -1,1 +1,4 @@
-[![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/8oH8aWc3)
+输入图在data里面
+输出图在output_results/3E/dynamic..../hdr_output里面
+train_3E.py是训练文件
+test_3E.py是生成输出图文件
