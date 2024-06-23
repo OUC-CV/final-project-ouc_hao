@@ -9,6 +9,7 @@ test_3E.py是生成输出图文件
   组员：郝泽其、陈诣勋、段小米
 
   1. 摘要
+     
 本次实验中，我们小组搜索了很多资料，查阅了很多相关文献，最终主要参考学习了一篇HDRFlow来进行本次实验作业，利用HDRFlow模型来进行HDR图像的生成。在报告中介绍了HDRFlow模型在高动态范围（HDR）图像处理任务中的应用，包括模型的构建和测试过程，因为使用了预训练模型，故没有训练过程，但也会对训练过程进行一定的说明。通过使用合成和真实数据集，对模型进行了系统的评估，重点分析了模型在不同曝光条件下的表现。
 
 HDR图像技术通过捕捉不同曝光时间的图像，生成更高质量、更高动态范围的图像。HDRFlow是一种针对HDR图像生成的深度学习模型。本文档详细描述了HDRFlow模型的测试流程，包含数据准备、模型构建、损失函数设计、训练策略和测试评估等环节。
@@ -123,41 +124,65 @@ get_args函数定义了所有训练相关的参数，如数据集路径、学习
 模块导入和网络加载：
 
 import_network(net_name, arch_dir='models.archs', backup_module='networks')：根据给定的网络名称从指定目录中导入网络模型。如果找不到指定的网络模型文件，将回退到备用模块。
-常用网络模块：
+
 激活函数：支持多种激活函数，如LeakyReLU、ReLU、Sigmoid和Tanh。
+
 卷积层：conv_layer()、反卷积层：deconv_layer()、上采样层：upconv_layer()和最近邻上采样层：up_nearest_layer()，每种层次支持添加批归一化层和指定激活函数。
+
 output_conv()：用于输出层的卷积。
+
 fc_layer()：全连接层。
+
 网络块构建：
+
 down_block()和up_block()：用于构建下采样和上采样的网络块，支持不同的下采样和上采样模式。
+
 make_layer()：用于构建ResNet风格的多层网络块。
+
 BasicBlock类和conv3x3()函数：用于构建基本的ResNet块。
+
 特定任务处理：
+
 merge_feats()和merge_hdr()：用于融合特征图和HDR图像。
+
 MergeHDRModule类：实现了将多个HDR图像按权重融合的模块。
+
 coords_grid()、backward_warp()和affine_warp()：用于图像坐标网格生成和仿射变换。
+
 图像处理函数：
+
 ldr_to_hdr()和adj_expo_ldr_to_ldr()：用于将LDR图像转换为HDR图像和调整曝光。
+
 图像尺寸调整：
+
 resize_flow()、resize_img_to_factor_of_k()和pad_img_to_factor_of_k()：用于调整流场和图像尺寸。
+
 这个文件提供了一系列用于构建和处理神经网络的工具函数和模块，特别适用于计算机视觉和图像处理任务。它支持从简单的卷积层到复杂的ResNet结构的构建，并提供了处理HDR图像、仿射变换以及流场调整等高级功能的实现。
 
 2. model_3E.py
+
 构建了一个名为HDRFlow的神经网络模型，该模型用于处理HDR图像合成和流场预测。以下是对该文件的详细解析，结合了之前给出的network_utils.py文件的工具函数和模块。
-文件功能和结构概述：
+
 模块导入和依赖：
 导入了math和time等标准库，以及torch和torch.nn用于神经网络构建。
 从其他自定义模块中导入了network_utils中的工具函数和类，如激活函数、卷积层、HDR处理函数等。
 还从flow_3E和fusion_3E模块分别导入了Flow_Net和Fusion_Net类。
+
 辅助函数：
 cur_tone_perturb(cur, test_mode, d=0.7)：根据测试模式生成或保持当前图像的色调扰动，以增强训练的鲁棒性。
+
 准备融合输入数据：
 prepare_fusion_inputs(ldrs, pt_c, expos, flow_preds)：根据输入的多个低动态范围图像（LDRs）、曝光时间和流场预测结果，准备用于融合网络输入的数据。
+
 HDRFlow类：
 HDRFlow类继承自nn.Module，包含了整个HDR图像合成和流场预测的流程。
+
 __init__方法初始化了两个子模块：
+
 flow_net：使用Flow_Net类实例化的流场预测网络。
+
 fusion_net：使用Fusion_Net类实例化的HDR图像融合网络，输入通道数为54，输出通道数为9，中间层通道数为256。
+
 forward方法定义了前向传播过程：
 首先对当前帧图像进行色调扰动处理。
 使用flow_net预测输入LDR序列的流场。
@@ -166,23 +191,29 @@ forward方法定义了前向传播过程：
 定义了HDRFlow模型的结构，包括特征提取网络、流估计模块和HDR图像生成模块。
 
 3. loss.py
+
 定义了损失函数类：HDRFlow_Loss_3E。用于计算HDR图像合成模型中的损失函数，包括重建损失、HDR对齐损失和光流损失。
-文件功能和结构概述：
+
 模块导入和依赖：
 导入了math和numpy等标准库，以及torch和torch.nn用于神经网络构建和损失函数计算。
 从network_utils模块中导入了backward_warp函数，用于图像的反向变换。
+
 辅助函数：
 tonemap(hdr_img, mu=5000)：对输入的HDR图像进行色调映射处理。
+
 损失函数类：
 HDRFlow_Loss_3E类继承自nn.Module，用于计算损失函数。
 __init__方法初始化了损失函数的参数，如色调映射系数mu。
+
 forward方法定义了损失函数的计算过程：
 pred是模型预测的HDR图像，hdrs是真实的HDR图像列表，flow_preds是光流预测结果，cur_ldr是当前的LDR图像，flow_mask和flow_gts是光流的掩码和真实值。
 计算重建损失recon_loss，使用nn.L1Loss()计算预测HDR图像和真实HDR图像的L1损失。
 根据当前LDR图像cur_ldr计算掩码mask，用于选择感兴趣的区域。
+
 如果掩码中有非零元素，则计算HDR对齐损失：
 使用backward_warp函数将各个HDR图像根据光流预测进行反向变换。
 对变换后的HDR图像应用色调映射并计算L1损失。
+
 计算光流损失：
 根据光流掩码flow_mask选择感兴趣的区域。
 使用nn.L1Loss()计算光流预测和真实值的L1损失，并加权累加到总损失中。
@@ -190,12 +221,14 @@ pred是模型预测的HDR图像，hdrs是真实的HDR图像列表，flow_preds�
 loss.py文件定义了两个损失函数类，用于HDR图像合成模型中的损失函数计算。这些损失函数包括重建损失、HDR对齐损失和光流损失。
 
 4. __init__.py
+
 用于将一个目录视为Python包。它包含了两个函数fetch_dataloader_2E和fetch_dataloader_3E，这些函数用于获取用于训练和验证的数据加载器。
-文件功能和结构概述：
+
 模块导入和依赖：
 导入了必要的Python库，包括torch和os。
 导入了从torch.utils.data模块中的DataLoader和ConcatDataset类。
 导入了自定义的数据集类Syn_Vimeo_Dataset和Syn_Sintel_Dataset。
+
 fetch_dataloader_3E函数：
 参数和功能与fetch_dataloader_2E函数类似，区别在于：
 使用了帧数为5，曝光次数为3的设置来加载数据集。
@@ -206,41 +239,50 @@ __init__.py文件通过函数fetch_dataloader_3E提供了获取训练和验证�
 提供了一系列辅助功能，如图像的预处理和后处理、损失计算和评估指标等。文件包含了多个实用函数和类，用于图像处理、数据加载和模型训练中的各种功能
 
 6. train_3E.py
+
 HDRFlow模型的训练脚本，负责模型的训练过程，包括前向传播、损失计算、反向传播和参数更新。
+
 导入必要的库和设置环境变量：
 使用 argparse 解析命令行参数，可以方便地指定数据集路径、日志目录、学习率等参数。
 使用 torch 和 torchvision 库进行深度学习模型的构建和训练。
+
 获取命令行参数：
 get_args() 函数定义了所有的命令行参数，例如数据集路径、日志目录、训练超参数等。
+
 模型训练函数：
 train() 函数定义了模型的训练过程。在每个训练循环中，加载数据并将其传输到 GPU 上，计算损失并进行反向传播优化模型参数。
+
 模型验证函数：
 validation() 函数用于评估模型在验证集上的性能。计算预测图像与真实图像之间的 PSNR（峰值信噪比），并保存最佳模型。
+
 主函数：
 main() 函数是整个训练流程的入口。它初始化模型、损失函数和优化器，并循环执行多个 epoch 的训练和验证过程。
+
 日志和模型保存：
 在训练过程中，会保存每个 epoch 结束后的模型参数、优化器状态和训练日志。这些信息保存在指定的日志目录下，便于后续分析和恢复训练。
 通过这份文件，可以实现对 HDRFlow 模型的端到端训练过程，包括数据加载、模型构建、损失计算、优化器设置、模型保存等功能，是一个完整的深度学习训练脚本
 
 7. test_3E.py
+
 HDRFlow模型的测试脚本，负责在指定数据集上评估预训练模型的效果，并保存评估结果。
-导入必要的库和设置环境变量：
+
 使用 argparse 解析命令行参数，支持选择不同的数据集和设置预训练模型路径、保存结果的目录等。
 使用 torch 和 torchvision 库进行深度学习模型的加载和推理。
-命令行参数：
 提供了 --dataset 和 --dataset_dir 参数，用于指定数据集类型和数据集路径。
 --pretrained_model 指定了预训练模型的路径。
 --save_results 选择是否保存评估结果，--save_dir 指定结果保存的目录。
+
 模型加载和设置：
 加载 HDRFlow 模型并放置在 GPU 上进行评估。
 使用 nn.DataParallel 支持在多 GPU 上进行测试。
-数据集加载和评估：
+
+数据集加载：
 根据 --dataset 参数选择加载不同的测试数据集，包括 DeepHDRVideo 和 CinematicVideo。
 使用 DataLoader 加载数据集，并设置适当的 batch size 和数据处理参数。
-评估指标：
-使用 skimage.metrics 库计算评估指标，包括 PSNR 和 SSIM，分别对低曝光、中等曝光和高曝光图像进行评估。
+
 结果保存：
 如果选择保存结果 (--save_results 为 True)，则将评估结果保存为图像文件，并根据曝光强度将结果分类保存。
+
 输出结果：
 在测试过程中，输出每个图像的评估结果，包括 PSNR 和 SSIM 的平均值以及每个曝光强度段的平均值。
 通过这份文件，可以实现对 HDRFlow 模型在不同数据集上的性能评估和结果保存，帮助分析模型在真实场景和合成场景下的表现差异，是进行模型效果验证和比较的重要工具。
