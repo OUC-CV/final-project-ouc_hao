@@ -2,7 +2,7 @@
 输出图在output_results/3E/dynamic..../hdr_output里面
 test_3E.py是生成输出图文件
 
-                                                       计算机视觉期末作业
+计算机视觉期末作业
 ——HDRFlow模型的训练与测试
 组员：郝泽其、陈诣勋、段小米
 
