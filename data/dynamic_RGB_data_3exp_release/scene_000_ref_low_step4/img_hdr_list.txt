@@ -1,0 +1,7 @@
+img_00.tif scene_000_ref_low_step4.hdr
+img_01.tif scene_000_ref_low_step4.hdr
+img_02.tif scene_000_ref_low_step4.hdr
+img_03.tif scene_000_ref_low_step4.hdr
+img_04.tif scene_000_ref_low_step4.hdr
+img_05.tif scene_000_ref_low_step4.hdr
+img_06.tif scene_000_ref_low_step4.hdr

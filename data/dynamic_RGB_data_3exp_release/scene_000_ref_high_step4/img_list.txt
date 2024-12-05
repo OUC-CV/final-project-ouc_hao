@@ -1,0 +1,7 @@
+img_00.tif
+img_01.tif
+img_02.tif
+img_03.tif
+img_04.tif
+img_05.tif
+img_06.tif

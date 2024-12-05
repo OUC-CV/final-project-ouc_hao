@@ -1,0 +1,6 @@
+scene_000_ref_low_step1/scene_000_ref_low_step1.hdr 1.00
+scene_000_ref_low_step4/scene_000_ref_low_step4.hdr 1.00
+scene_000_ref_mid_step1/scene_000_ref_mid_step1.hdr 4.00
+scene_000_ref_mid_step4/scene_000_ref_mid_step4.hdr 4.00
+scene_000_ref_high_step1/scene_000_ref_high_step1.hdr 16.00
+scene_000_ref_high_step4/scene_000_ref_high_step4.hdr 16.00
